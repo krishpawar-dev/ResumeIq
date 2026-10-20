@@ -30,19 +30,22 @@ app.use(
 );
 
 // CORS configuration
+
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
+  process.env.CLIENT_URL,
+  'https://resumeiq-sand.vercel.app',
+  'http://localhost:5173',
   'http://localhost:3000',
   'http://127.0.0.1:5173'
-];
+].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // allow requests with no origin (like mobile apps, curl, server-to-server)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+    if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+
+    console.error('Blocked CORS origin:', origin);
     return callback(new Error('CORS policy: Not allowed by origin'));
   },
   credentials: true,
